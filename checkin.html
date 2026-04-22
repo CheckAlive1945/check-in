@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check-In</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300;1,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #c8a96e;
+    --gold-light: #e8d5a3;
+    --ink: #1a1208;
+    --parchment: #f5ead6;
+    --parchment-dark: #e8d8ba;
+    --shadow: rgba(30, 15, 5, 0.35);
+  }
+
+  body {
+    background: #0d0906;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    padding: 24px;
+    overflow: hidden;
+  }
+
+  .bg-texture {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(100,60,10,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 50%, rgba(80,40,5,0.12) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .container {
+    position: relative;
+    max-width: 900px;
+    width: 100%;
+    animation: fadeUp 1s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .eyebrow {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    opacity: 0.8;
+  }
+
+  h1 {
+    font-family: 'IM Fell English', serif;
+    color: var(--parchment);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 400;
+    line-height: 1.2;
+    text-shadow: 0 2px 20px rgba(200,169,110,0.3);
+  }
+
+  h1 em {
+    color: var(--gold-light);
+    font-style: italic;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+    margin: 18px 0 0;
+  }
+
+  .divider-line {
+    height: 1px;
+    width: 60px;
+    background: linear-gradient(to right, transparent, var(--gold));
+  }
+
+  .divider-line.right {
+    background: linear-gradient(to left, transparent, var(--gold));
+  }
+
+  .divider-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  @media (max-width: 600px) {
+    .cards { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--parchment);
+    border-radius: 2px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.4s cubic-bezier(.22,.68,0,1.2), box-shadow 0.4s ease;
+    box-shadow: 0 8px 40px var(--shadow), inset 0 0 0 1px rgba(200,169,110,0.3);
+    animation: fadeUp 1s ease both;
+  }
+
+  .card:nth-child(2) { animation-delay: 0.15s; }
+
+  .card:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 20px 60px var(--shadow), 0 0 0 2px var(--gold), inset 0 0 0 1px rgba(200,169,110,0.5);
+  }
+
+  .card.selected {
+    box-shadow: 0 20px 60px var(--shadow), 0 0 0 3px var(--gold);
+  }
+
+  .card.selected .selected-badge {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .painting-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    background: var(--ink);
+    overflow: hidden;
+  }
+
+  .painting-frame::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1px solid rgba(200,169,110,0.4);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .painting-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: sepia(0.2) contrast(1.05);
+    transition: filter 0.4s ease, transform 0.6s ease;
+  }
+
+  .card:hover .painting-frame img {
+    filter: sepia(0) contrast(1.1);
+    transform: scale(1.04);
+  }
+
+  .selected-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: var(--gold);
+    color: var(--ink);
+    font-family: 'IM Fell English', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 1px;
+    z-index: 3;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(.22,.68,0,1.4);
+  }
+
+  .card-body {
+    padding: 22px 24px 26px;
+    background: var(--parchment);
+    position: relative;
+  }
+
+  .card-body::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 20px; right: 20px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold), transparent);
+  }
+
+  .painting-title {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    color: var(--ink);
+    font-size: 1.05rem;
+    margin-bottom: 4px;
+  }
+
+  .painting-author {
+    font-size: 0.78rem;
+    color: #7a6040;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .card-quote {
+    font-size: 1rem;
+    font-style: italic;
+    color: #3a2a10;
+    line-height: 1.6;
+    margin-bottom: 14px;
+    border-left: 2px solid var(--gold);
+    padding-left: 12px;
+  }
+
+  .card-meaning {
+    font-size: 0.85rem;
+    color: #5a4020;
+    line-height: 1.6;
+  }
+
+  .card-meaning strong {
+    color: #8b6030;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.72rem;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .footer {
+    text-align: center;
+    margin-top: 30px;
+    color: rgba(200,169,110,0.5);
+    font-style: italic;
+    font-size: 0.85rem;
+    animation: fadeUp 1s 0.3s ease both;
+  }
+</style>
+</head>
+<body>
+<div class="bg-texture"></div>
+<div class="container">
+  <div class="header">
+    <p class="eyebrow">Team Check-In</p>
+    <h1>Which painter are you <em>today?</em></h1>
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-dot"></div>
+      <div class="divider-line right"></div>
+    </div>
+  </div>
+
+  <div class="cards">
+    <!-- Card 1: Venus -->
+    <div class="card" onclick="select(this)">
+      <div class="painting-frame">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg/1920px-Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg"
+          alt="The Birth of Venus by Botticelli"
+          onerror="this.style.background='#2a1a08'; this.style.display='flex'"
+        >
+        <div class="selected-badge">✦ I choose this</div>
+      </div>
+      <div class="card-body">
+        <p class="painting-title">The Creation of Adam</p>
+        <p class="painting-author">by Michelangelo </p>
+        <p class="card-quote">"freedom of choice, reach or avoid 'god' "</p>
+        <p class="card-meaning">
+          <strong>Hidden meaning</strong>
+          Venus emerging from the sea symbolises the soul entering the world fresh and unformed. Choosing this means you're in a soft, receptive, creative state — ready to absorb, to be moved, to begin something.
+        </p>
+      </div>
+    </div>
+
+    <!-- Card 2: School of Athens -->
+    <div class="card" onclick="select(this)">
+      <div class="painting-frame">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Last_Judgement_%28Michelangelo%29.jpg/960px-Last_Judgement_%28Michelangelo%29.jpg"
+          alt="The Last Judgment"
+        >
+        <div class="selected-badge">✦ I choose this</div>
+      </div>
+      <div class="card-body">
+        <p class="painting-title">The Last Judgment</p>
+        <p class="painting-author">by Michelangelo</p>
+        <p class="card-quote">"everything is determined already and in order, out of our control "</p>
+        <p class="card-meaning">
+          <strong>Hidden meaning</strong>
+          Every figure points in a different direction — toward the sky (ideals) or the earth (reason). Choosing this means you're in analytical, engaged mode: full of ideas, ready to question, challenge, and build something together.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <p class="footer">Pick one · Share why · Let the meeting begin</p>
+</div>
+
+<script>
+  function select(card) {
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+  }
+</script>
+</body>
+</html>
