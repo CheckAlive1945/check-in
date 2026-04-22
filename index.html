@@ -17,15 +17,13 @@
     --shadow: rgba(30, 15, 5, 0.35);
   }
 
+  /* FIXED BODY */
   body {
     background: #0d0906;
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-family: 'Cormorant Garamond', serif;
     padding: 24px;
-    overflow: hidden;
+    overflow-y: auto; /* allow scrolling */
   }
 
   .bg-texture {
@@ -41,6 +39,7 @@
     position: relative;
     max-width: 900px;
     width: 100%;
+    margin: 0 auto; /* centers horizontally only */
     animation: fadeUp 1s ease both;
   }
 
@@ -259,7 +258,7 @@
 <div class="bg-texture"></div>
 <div class="container">
   <div class="header">
-    <p class="eyebrow">Team Check-In</p>
+    <p class="eyebrow"> IGV, Team Check-In</p>
     <h1>Which side are you <em>today?</em></h1>
     <div class="divider">
       <div class="divider-line"></div>
@@ -269,25 +268,22 @@
   </div>
 
   <div class="cards">
-    <!-- Card 1: Venus -->
+   
     <div class="card" onclick="select(this)">
       <div class="painting-frame">
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg/1920px-Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg"
-          alt="The Birth of Venus by Botticelli"
-          onerror="this.style.background='#2a1a08'; this.style.display='flex'"
+          alt="The Creation of Adam"
         >
         <div class="selected-badge">✦ I choose this</div>
       </div>
       <div class="card-body">
         <p class="painting-title">The Creation of Adam</p>
-        <p class="painting-author">by Michelangelo </p>
-        <p class="card-quote">"freedom of choice, reach or avoid 'god' "</p>
-       
+        <p class="painting-author">by Michelangelo</p>
+        <p class="card-quote">"freedom of choice, reach or avoid 'god'"</p>
       </div>
     </div>
 
-    <!-- Card 2: School of Athens -->
     <div class="card" onclick="select(this)">
       <div class="painting-frame">
         <img
@@ -299,13 +295,13 @@
       <div class="card-body">
         <p class="painting-title">The Last Judgment</p>
         <p class="painting-author">by Michelangelo</p>
-        <p class="card-quote">"everything is determined already and in order, out of our control "</p>
-      
+        <p class="card-quote">"everything is determined already and in order, out of our control"</p>
+    
       </div>
     </div>
   </div>
 
-  <p class="footer">Pick one · Share why · Let the meeting begin</p>
+  <p class="footer">pick one nd say why</p>
 </div>
 
 <script>
